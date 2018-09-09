@@ -1,0 +1,125 @@
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+import debounce from 'lodash/debounce';
+
+class App extends Component {
+  state = {
+    inputValue: '',
+    placeholder: 'Serch repos',
+    users: [],
+    user: {}
+  };
+
+  // Update input field with state.
+
+  updateInputValue(inputValue) {
+    this.setState({
+      inputValue
+    });
+  }
+
+  // Potential search function for searching API.
+  // Debounce to limit hitting API too much
+
+  searchForUser = debounce(inputValue => {
+    fetch(`https://api.github.com/search/users?q=${inputValue}`)
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          users: res
+        });
+      });
+  }, 1000);
+
+  // Get function to fetch user data on submit.
+
+  getUserData(username) {
+    fetch(`https://api.github.com/users/${username}`)
+      .then(res => res.json())
+      .then(res => {
+        if (res.login) {
+          this.setState({
+            user: res,
+            users: [...this.state.users, res]
+          });
+        } else {
+          return;
+        }
+      });
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    this.getUserData(this.refs.username.value);
+    this.setState({ inputValue: '' });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Welcome to a React App</h1>
+          <h1 className="App-title">
+            The more repos on github, the faster the spinner spins
+          </h1>
+        </header>
+        <form onSubmit={e => this.handleSubmit(e)}>
+          <label>
+            Username:{' '}
+            <input
+              onChange={e => this.updateInputValue(e.target.value)}
+              ref="username"
+              value={this.state.inputValue}
+              placeholder={this.state.placeholder}
+              type="text"
+            />
+          </label>
+        </form>
+        <p>
+          Last Searched for User:{' '}
+          {this.state.user.login ? this.state.user.login : '---'}
+        </p>
+        <div className="list-wrapper">
+          {this.state.users.map(user => {
+            return (
+              <div className="wrapper">
+                <p className="user-name">
+                  {user.name ? `Name: ${user.name}` : 'No name val'}
+                  <br />
+                  {user.login ? `Login: ${user.login}` : "Doens't exist"}
+                  <br />
+                  {user.location
+                    ? `Location: ${user.location}`
+                    : 'Location: Mars?'}
+                </p>
+                <div className="content">
+                  <img
+                    className="user-avatar"
+                    src={user.avatar_url}
+                    alt="Missing Avatar"
+                  />
+                  <img
+                    className="spinner"
+                    style={{
+                      animation: `App-logo-spin infinite ${
+                        user.public_repos ? (1 / user.public_repos) * 100 : 0
+                      }s linear`,
+                      height: '80px'
+                    }}
+                    src={logo}
+                    alt="Spinner"
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default App;
