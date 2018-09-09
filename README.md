@@ -34,6 +34,15 @@ Used CSS GRIDS to handle the spacing and ordering of the resulting list.
 
 Use [react-skeleton-css](https://www.npmjs.com/package/react-skeleton-css) for nice clear `css`.
 
+#### TODOs:
+1. Implement search function.
+2. Link up user to github.
+3. Maybe some auth at some point.
+4. Push out to netlify maybe?
+
+
+***
+
 
 Below you will find some information on how to perform common tasks.<br>
 You can find the most recent version of this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
