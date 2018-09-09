@@ -7,7 +7,7 @@ import debounce from 'lodash/debounce';
 class App extends Component {
   state = {
     inputValue: '',
-    placeholder: 'Serch repos',
+    placeholder: 'Search repos',
     users: [],
     user: {}
   };

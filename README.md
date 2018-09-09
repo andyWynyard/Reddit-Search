@@ -15,7 +15,7 @@ Search for specific username (login), HAS TO BE EXACT. onSubmit pulls in the use
 ```
 state = {
     inputValue: '',
-    placeholder: 'Serch repos',
+    placeholder: 'Search repos',
     users: [],
     user: {}
   };
