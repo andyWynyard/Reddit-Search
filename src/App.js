@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { get } from 'axios';
 
 import debounce from 'lodash/debounce';
 
@@ -36,19 +37,24 @@ class App extends Component {
   // Get function to fetch user data on submit.
 
   getUserData(username) {
-    fetch(`https://api.github.com/users/${username}`)
-      .then(res => res.json())
-      .then(res => {
-        if (res.login) {
-          this.setState({
-            user: res,
-            users: [...this.state.users, res]
-          });
-        } else {
-          return;
-        }
-      });
+    get(`https://api.github.com/users/${username}`).then(res => {
+      const user = res.data;
+      if (user.login) {
+        this.setState({
+          user,
+          users: [...this.state.users, user]
+        });
+      } else {
+        return;
+      }
+    });
   }
+
+  // axios.get(`https://jsonplaceholder.typicode.com/users`)
+  //     .then(res => {
+  //       const persons = res.data;
+  //       this.setState({ persons });
+  //     })
 
   handleSubmit(e) {
     e.preventDefault();
@@ -85,7 +91,7 @@ class App extends Component {
         <div className="list-wrapper">
           {this.state.users.map(user => {
             return (
-              <div className="wrapper">
+              <div key={user.id} className="wrapper">
                 <p className="user-name">
                   {user.name ? `Name: ${user.name}` : 'No name val'}
                   <br />
