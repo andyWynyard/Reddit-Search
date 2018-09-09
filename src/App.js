@@ -8,7 +8,7 @@ import debounce from 'lodash/debounce';
 class App extends Component {
   state = {
     inputValue: '',
-    placeholder: 'Search login',
+    placeholder: 'Login name (exact)',
     users: [],
     user: {}
   };
@@ -85,7 +85,7 @@ class App extends Component {
           </label>
         </form>
         <p>
-          Last Searched for User:{' '}
+          Last found login:{' '}
           {this.state.user.login ? this.state.user.login : '---'}
         </p>
         <div className="list-wrapper">
