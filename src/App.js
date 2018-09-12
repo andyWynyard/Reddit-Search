@@ -20,7 +20,7 @@ class App extends Component {
     this.setState({
       inputValue
     });
-    this.searchForUser(inputValue);
+    // this.searchForUser(inputValue);
   }
 
   // Potential search function for searching API.
@@ -30,6 +30,8 @@ class App extends Component {
     get(`https://api.github.com/search/users?q=${inputValue}`).then(res => {
       res.data.items.map(item => {
         return get(`https://api.github.com/users/${item.login}`).then(res => {
+          console.log(res.data);
+
           this.setState({
             searchedUsers: [...this.state.searchedUsers, res.data]
           });
@@ -154,7 +156,8 @@ class App extends Component {
                   className="wrapper"
                   onClick={() =>
                     this.setState({
-                      users: [...this.state.users, user]
+                      users: [...this.state.users, user],
+                      searchedUsers: []
                     })
                   }>
                   <p className="user-name">
