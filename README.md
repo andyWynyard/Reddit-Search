@@ -8,27 +8,26 @@ Instructions:
 2. `npm i`
 3. `npm start` (runs on PORT: 3000)
 
-Search for specific username (login), HAS TO BE EXACT. onSubmit pulls in the user. 
+Search for a spcific topic on Reddit, or just grab the Sweden subreddit. Will only return 25 results.
 
 #### State:
 
 ```
-state = {
+ state = {
     inputValue: '',
-    placeholder: 'Search repos',
-    users: [],
-    user: {}
+    placeholder: 'Search Reddit',
+    reddit: []
   };
   ```
 
 - `inputValue:` updates value in input field.
 - `placeholder:` informs users.
 - `users:` is an array of objects. All users that have been cumulatively found.
-- `user:` single object of the last user to be searched for.
+- `user:` Array of 25 results.
 
 Two API endpoints used: 
-https://api.github.com/search/users?q= 
-https://api.github.com/users/ 
+https://www.reddit.com/r/sweden.json 
+http://www.reddit.com/search.json?q= 
 
 Used CSS GRIDS to handle the spacing and ordering of the resulting list.
 
