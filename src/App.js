@@ -3,79 +3,50 @@ import logo from './logo.svg';
 import './App.css';
 import { get } from 'axios';
 
-import debounce from 'lodash/debounce';
-
 class App extends Component {
   state = {
     inputValue: '',
-    placeholder: 'Login name (exact)',
-    users: [],
-    user: {},
-    searchedUsers: []
+    placeholder: 'Search Reddit',
+    reddit: []
   };
 
   // Update input field with state.
+
+  getSwedenSubredditRedditData() {
+    this.setState({
+      reddit: []
+    });
+    get(`https://www.reddit.com/r/sweden.json`).then(res =>
+      res.data.data.children.forEach(item => {
+        this.setState({
+          reddit: [...this.state.reddit, item.data]
+        });
+      })
+    );
+  }
+  getSubredditData() {
+    this.setState({
+      reddit: []
+    });
+    get(`http://www.reddit.com/search.json?q=${this.state.inputValue}`).then(
+      res =>
+        res.data.data.children.forEach(item => {
+          this.setState({
+            reddit: [...this.state.reddit, item.data]
+          });
+        })
+    );
+  }
 
   updateInputValue(inputValue) {
     this.setState({
       inputValue
     });
-    // this.searchForUser(inputValue);
   }
-
-  // Potential search function for searching API.
-  // Debounce to limit hitting API too much
-
-  searchForUser = debounce(inputValue => {
-    get(`https://api.github.com/search/users?q=${inputValue}`).then(res => {
-      res.data.items.map(item => {
-        return get(`https://api.github.com/users/${item.login}`).then(res => {
-          console.log(res.data);
-
-          this.setState({
-            searchedUsers: [...this.state.searchedUsers, res.data]
-          });
-        });
-      });
-    });
-  }, 1000);
-
-  // Get function to fetch user data on submit.
-
-  getUserData(username) {
-    get(`https://api.github.com/users/${username}`)
-      .then(res => {
-        const user = res.data;
-        console.log(user);
-
-        if (user.login) {
-          this.setState({
-            user,
-            users: [...this.state.users, user]
-          });
-        } else {
-          return;
-        }
-      })
-      .catch(err => {
-        console.log(err.response);
-        if (err.response.status === 404) {
-          this.setState({
-            user: { login: `${username} doesn't exist bro.` }
-          });
-        }
-      });
-  }
-
-  // axios.get(`https://jsonplaceholder.typicode.com/users`)
-  //     .then(res => {
-  //       const persons = res.data;
-  //       this.setState({ persons });
-  //     })
 
   handleSubmit(e) {
     e.preventDefault();
-    this.getUserData(this.refs.username.value);
+    this.getSubredditData();
     this.setState({ inputValue: '' });
   }
 
@@ -85,107 +56,56 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to a React App</h1>
-          <h1 className="App-title">
-            The more repos on github, the faster the spinner spins
-          </h1>
+          <h1 className="App-title">Reddit API</h1>
         </header>
         <form onSubmit={e => this.handleSubmit(e)}>
-          <label>
-            Username:{' '}
-            <input
-              onChange={e => this.updateInputValue(e.target.value)}
-              ref="username"
-              value={this.state.inputValue}
-              placeholder={this.state.placeholder}
-              type="text"
-            />
-          </label>
+          <input
+            placeholder={this.state.placeholder}
+            onChange={e => this.updateInputValue(e.target.value)}
+            value={this.state.inputValue}
+            type="text"
+          />
         </form>
-        <p>
-          As you type, it will search for a user by name. This will create a
-          list to the right. If you click on the user it will add to the content
-          list. If you submit the searched for term, it will search for the
-          exact username on GitHub
-        </p>
-        <p>
-          Last found login:{' '}
-          {this.state.user.login ? this.state.user.login : '---'}
-        </p>
+        <button onClick={() => this.getSwedenSubredditRedditData()}>
+          Hit Sweden Subreddit
+        </button>
+
+        <p />
+
         <div className="app-content">
           <div className="list-wrapper">
-            {this.state.users.map(user => {
+            {this.state.reddit.map(post => {
               return (
-                <div key={user.id} className="wrapper">
-                  <p className="user-name">
-                    {user.name ? `Name: ${user.name}` : 'No name val'}
-                    <br />
-                    {user.login ? `Login: ${user.login}` : "Doens't exist"}
-                    <br />
-                    {user.location
-                      ? `Location: ${user.location}`
-                      : 'Location: Mars?'}
-                  </p>
-                  <div className="content">
-                    <img
-                      className="user-avatar"
-                      src={user.avatar_url}
-                      alt="Missing Avatar"
-                    />
-                    <img
-                      className="spinner"
-                      style={{
-                        animation: `App-logo-spin infinite ${
-                          user.public_repos ? (1 / user.public_repos) * 100 : 0
-                        }s linear`,
-                        height: '80px'
-                      }}
-                      src={logo}
-                      alt="Spinner"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="search-list">
-            {this.state.searchedUsers.map(user => {
-              return (
-                <div
-                  key={user.id}
-                  className="wrapper"
-                  onClick={() =>
-                    this.setState({
-                      users: [...this.state.users, user],
-                      searchedUsers: []
-                    })
-                  }>
-                  <p className="user-name">
-                    {user.name ? `Name: ${user.name}` : 'No name val'}
-                    <br />
-                    {user.login ? `Login: ${user.login}` : "Doens't exist"}
-                    <br />
-                    {user.location
-                      ? `Location: ${user.location}`
-                      : 'Location: Mars?'}
-                  </p>
-                  <div className="content">
-                    <img
-                      className="user-avatar"
-                      src={user.avatar_url}
-                      alt="Missing Avatar"
-                    />
-                    <img
-                      className="spinner"
-                      style={{
-                        animation: `App-logo-spin infinite ${
-                          user.public_repos ? (1 / user.public_repos) * 100 : 0
-                        }s linear`,
-                        height: '80px'
-                      }}
-                      src={logo}
-                      alt="Spinner"
-                    />
+                <div key={post.title} className="card">
+                  <img
+                    className="card-img-top"
+                    src={
+                      post.preview
+                        ? post.preview.images[0].source.url
+                        : 'https://applets.imgix.net/https%3A%2F%2Fassets.ifttt.com%2Fimages%2Fchannels%2F1352860597%2Ficons%2Fon_color_large.png%3Fversion%3D0?ixlib=rails-2.1.3&w=240&h=240&auto=compress&s=14be39acc55fbe4638b776011273dfd5'
+                    }
+                    alt="Card cap"
+                  />
+                  <div className="card-body">
+                    <h5 className="card-title">{post.title}</h5>
+                    <p className="card-text">
+                      {post.selftext.length > 100
+                        ? `${post.selftext.substring(0, 100)}...`
+                        : post.selftext}
+                    </p>
+                    <a
+                      href={post.url}
+                      target="_blank"
+                      className="btn btn-primary">
+                      Read More
+                    </a>
+                    <hr />
+                    <span className="badge badge-secondary">
+                      Subreddit: {post.subreddit}
+                    </span>
+                    <span className="badge badge-dark">
+                      Score: {post.score}
+                    </span>
                   </div>
                 </div>
               );

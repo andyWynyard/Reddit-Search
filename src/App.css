@@ -34,7 +34,7 @@
 
 .app-content {
   display: grid;
-  grid-template-columns: 8fr minmax(200px, 1fr);
+  grid-template-columns: minmax(200px, 1fr);
   grid-gap: 3rem;
 }
 
