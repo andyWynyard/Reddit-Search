@@ -28,7 +28,7 @@ class App extends Component {
     this.setState({
       reddit: []
     });
-    get(`http://www.reddit.com/search.json?q=${this.state.inputValue}`).then(
+    get(`https://www.reddit.com/search.json?q=${this.state.inputValue}`).then(
       res =>
         res.data.data.children.forEach(item => {
           this.setState({
@@ -67,7 +67,7 @@ class App extends Component {
           />
         </form>
         <button onClick={() => this.getSwedenSubredditRedditData()}>
-          Hit Sweden Subreddit
+          Sweden Subreddit
         </button>
 
         <p />
